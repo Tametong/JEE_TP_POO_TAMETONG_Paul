@@ -9,7 +9,7 @@ public class Bibliotheque {
     private Etudiant []etudiant = new Etudiant[50];
     private Emprunt []emprunt = new Emprunt[200];
 
-    int nbLivre, nbMembre, nbEmprunts;
+    int nbLivre = 0, nbMembre = 0, nbEmprunts = 0;
 
     public Etudiant[] getEtudiant() {
         return etudiant;
@@ -44,30 +44,31 @@ public class Bibliotheque {
     }
 
     public void ajouterLivre(Livre liv){
-        nbLivre = 0;
+
         livre[nbLivre] = liv;
         nbLivre = nbLivre + 1;
     }
 
     public void inscrireMembre(Etudiant etud){
-        nbMembre = 0;
         etudiant[nbMembre] = etud;
         nbMembre = nbMembre + 1;
 
     }
 
     public void rechercherLivreParTitre(String titre){
+        boolean trouve = false;
         for (int i = 0; i < livre.length; i++) {
             if (livre[i] != null && livre[i].getTitre().equals(titre)) {
                 System.out.println("Le livre existe: ");
-                System.out.println("isbn"+ livre[i].getIsbn());
+                System.out.println("isbn: "+ livre[i].getIsbn());
                 System.out.println("Titre: " + livre[i].getTitre());
                 System.out.println("Auteur: " + livre[i].getAuteur());
                 System.out.println("Année de publication: " + livre[i].getAnneePublication());
-            }else{
-                System.out.println("Le livre n'existe pas");
+                trouve = true;
+                break;
             }
         }
+        if (!trouve) System.out.println("Le livre n'existe pas");
     }
 
     public void rechercherMembreParId(String id){
@@ -82,31 +83,38 @@ public class Bibliotheque {
     }
 
     public void effectuerEmprunt(String isbn, String idMember, String date){
-        nbEmprunts = 0;
-        for (int i = 0; i < 100; i++) {
-            if (livre[i].getIsbn().equals(isbn) ) {
+
+        boolean exist = false;
+        for (int i = 0; i < nbLivre; i++) {
+            if (livre[i] != null && livre[i].getIsbn().equals(isbn) && livre[i].isDisponible() ) {
                 for (int j = 0; j < 50; j++) {
                     if (etudiant[j] != null && etudiant[j].getId().equals(idMember)) {
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                         String dateEnregistrement = LocalDate.now().format(formatter);
                         emprunt[nbEmprunts]= new Emprunt(livre[i], etudiant[j], dateEnregistrement, date, false);
                         nbEmprunts +=1;
+                        livre[i].setDisponible(false);
+                        exist = false;
+                        System.out.println("Emprunt effectué avec succès");
                     }
 
                 }
-                System.out.println("Emprunt effectué avec succès");
-            }else {
-                System.out.println("Erreur lors de l'emprunt veuillez réessayer");
+
             }
+
+        }
+        if (exist ) {
+            System.out.println("Erreur lors de l'emprunt veuillez réessayer");
         }
 
     }
 
     public  void afficherLivreDisponible(){
+        System.out.println("Livres disponibles: ");
         for (int i = 0; i < livre.length; i++) {
             if (livre[i] != null && livre[i].isDisponible()) {
-                System.out.println("Livres disponibles: ");
-                System.out.println("Titre: "+ livre[i].getTitre() + "de :"+ livre[i].getAuteur());
+
+                System.out.println("Titre: "+ livre[i].getTitre() + "de l'auteur "+ livre[i].getAuteur());
             }
         }
     }
@@ -121,12 +129,12 @@ public class Bibliotheque {
             }
         }
         System.out.println("Nombre de livre disponible: "+ livreDisponible);
-        System.out.println("Nombre de membre: "+ etudiant.length);
+        System.out.println("Nombre de membre: "+ nbMembre);
 
 
         System.out.println("Nombre d'emprunts en cours: "+ nbEmprunts);
 
-        float tauxOccupation = ((float) nbEmprunts / nbLivre)*100;
+        float tauxOccupation = nbLivre == 0 ? 0 : ((float) nbEmprunts / nbLivre)*100;
         System.out.println("Taux d'occupation: "+ tauxOccupation + "%");
     }
 }

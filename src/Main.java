@@ -34,6 +34,7 @@ public class Main {
             System.out.println("||  5. Rechercher un livre                    ||");
             System.out.println("||  6. Afficher livres disponibles            ||");
             System.out.println("||  7. Afficher les statistiques              ||");
+            System.out.println("||  8. Rechercher un membre avec l'id         ||");
             System.out.println("||  0. Quitter                                ||");
             System.out.println("||                                            ||");
             System.out.println("||============================================||");
@@ -54,16 +55,24 @@ public class Main {
                     int annePublication = sc.nextInt();
                     sc.nextLine();
 
+                    boolean exist = false;
+
                     for (int i = 0; i < biliotheque.getLivre().length; i++) {
                         if (biliotheque.getLivre()[i] != null && isbn.equals(biliotheque.getLivre()[i].getIsbn())) {
-                            System.out.println("Ce livre existe déja, veuillez en créer un autre avec un autre isbn");
-                        }else{
-                            //Livre créer par l'utilisateur
-                            Livre livre4 = new Livre(isbn, nomAuteur, titre, annePublication, true);
-                            biliotheque.ajouterLivre(livre4);
+                            exist = true;
+                            break;
+
                         }
                     }
-
+                    if (exist) {
+                        System.out.println("Ce livre existe déja, veuillez choisir un autre ISBN.");
+                    }else {
+                        //Livre créer par l'utilisateur
+                        Livre livre4 = new Livre(isbn, nomAuteur, titre, annePublication, true);
+                        biliotheque.ajouterLivre(livre4);
+                        System.out.println("Livre ajouté avec succès !");
+                    }
+                    break;
 
 
                 case 2:
@@ -78,13 +87,21 @@ public class Main {
                     System.out.println("Entrer la filière: ");
                     String filiere = sc.nextLine();
 
+                    boolean existe = false;
+
                     for (int i = 0; i < biliotheque.getEtudiant().length; i++) {
                         if (biliotheque.getEtudiant()[i] != null && id.equals(biliotheque.getEtudiant()[i].getId())) {
-                            System.out.println("l'étudiant existe déja veuillez en créer un autre avec un autre identifiant");
-                        }else{
-                            Etudiant etudiant3 = new Etudiant(id, nom, email, filiere);
-                            biliotheque.inscrireMembre(etudiant3);
+                            existe = true;
+                            break;
                         }
+                    }
+
+                    if (existe) {
+                        System.out.println("l'étudiant existe déja veuillez en créer un autre avec un autre identifiant");
+                    }else {
+                        Etudiant etudiant3 = new Etudiant(id, nom, email, filiere);
+                        biliotheque.inscrireMembre(etudiant3);
+                        System.out.println("Etudiant ajouté avec succès");
                     }
                     break;
 
@@ -135,15 +152,22 @@ public class Main {
 
                     break;
 
+                case 8:
+                    //Rechercher un membre
+                    System.out.println("Entrez l'id du membre à rechercher");
+                    String idm = sc.nextLine();
+                    biliotheque.rechercherMembreParId(idm);
+                    break;
+
                 case 0:
                     System.out.println("Good bye");
                     System.exit(0);
 
                     break;
                 default:
-                    System.out.println("Vous avez choisi une option indisponible");
+                    System.out.println("Vous avez choisi une option indisponible, veuillez choisir une autre option");
             }
-        }while (choix == 0);
+        }while (choix != 0 );
 
         sc.close();
     }
